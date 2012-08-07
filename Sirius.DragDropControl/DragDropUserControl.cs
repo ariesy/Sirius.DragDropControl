@@ -21,13 +21,16 @@ namespace Sirius.DragDropControl
 
         public bool AllowColumnDragDrop { get; set; }
 
+        public DataGridView InnerDataGridView
+        {
+            get { return dataGridView; }
+        }
+
         public DragDropUserControl()
         {
             InitializeComponent();
             AllowColumnDragDrop = true;
             AllowRowDragDrop = true;
-            dataGridView.Rows.Add("11", "12", "13");
-            dataGridView.Rows.Add("21", "22", "23");
         }
 
         private void DataGridViewMouseMove(object theSender, MouseEventArgs theE)
