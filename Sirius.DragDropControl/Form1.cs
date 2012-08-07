@@ -14,6 +14,7 @@ namespace Sirius.DragDropControl
         public Form1()
         {
             InitializeComponent();
+            panel1.Controls.Add(new DragDropUserControl());
         }
     }
 }
