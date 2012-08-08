@@ -23,6 +23,33 @@ namespace Sirius.DragDropControl
             DataRow aRow = aTable.NewRow();
             DragDropUserControl aDragDropUserControl = new DragDropUserControl(aTable);
             panel1.Controls.Add(aDragDropUserControl);
+            Comparison<object> compare = (object x, object y) =>
+                              {
+                                  if (x == y || (x == null && y == null))
+                                  {
+                                      return 0;
+                                  }
+
+                                  if (x == null)
+                                  {
+                                      return 1;
+                                  }
+
+                                  if (y == null)
+                                  {
+                                      return -1;
+                                  }
+
+                                  int xx = int.Parse(x.ToString());
+                                  int yy = int.Parse(y.ToString());
+                                  return yy - xx;
+                              };
+            aDragDropUserControl.Sort(
+                0,
+                DragDropUserControl.SortBy.ByRow,
+                compare);
+
+            aDragDropUserControl.Sort(0, DragDropUserControl.SortBy.ByColumn, compare);
         }
     }
 }
