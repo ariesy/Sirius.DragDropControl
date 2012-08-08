@@ -14,6 +14,15 @@ namespace Sirius.DragDropControl
         public Form1()
         {
             InitializeComponent();
+
+            var aParameter = new FormatPreviewControl.Parameters();
+            aParameter.ColumnLabels.Add("Entity");
+            aParameter.RowLabels.Add("Date");
+            aParameter.RowLabels.Add("Data");
+            aParameter.Data["Entity"] = new List<object> { "Direct Group", "Fortor Motor", "Home Depot" };
+            aParameter.Data["Date"] = new List<object> { 2011, 2012 };
+            aParameter.Data["Data"] = new List<object> { "Deposit", "debt" };
+            var aFormatPreviewControl = new FormatPreviewControl(aParameter);
             DataTable aTable = new DataTable();
             aTable.Columns.Add("A");
             aTable.Columns.Add("B");
