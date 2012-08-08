@@ -23,6 +23,7 @@ namespace Sirius.DragDropControl
             aParameter.Data["Date"] = new List<object> { 2011, 2012 };
             aParameter.Data["Data"] = new List<object> { "Deposit", "debt" };
             var aFormatPreviewControl = new FormatPreviewControl(aParameter);
+            panel1.Controls.Add(aFormatPreviewControl);
 
             //DataTable aTable = new DataTable();
             //aTable.Columns.Add("A");

@@ -44,18 +44,17 @@ namespace Sirius.DragDropControl
         private void InitializeInnerControl(Parameters theParameters)
         {
             DataTable aDataTable = new DataTable();
-            int aColumnCount = 1;
-            for (int aI = 0; aI < theParameters.RowLabels.Count; aI++)
-            {
-                var aLabel = theParameters.RowLabels[aI];
-                aColumnCount *= theParameters.Data[aLabel].Count;
-            }
+            int aColumnCount = theParameters.RowLabels.Aggregate(1, (current, aLabel) => current * theParameters.Data[aLabel].Count);
 
             var aColumnHeaders = CreateColumnHeaders(theParameters.Data[theParameters.RowLabels[0]].Count);
             foreach (var aHeader in aColumnHeaders)
             {
                 aDataTable.Columns.Add(aHeader);
             }
+
+            innerControl = new DragDropUserControl(aDataTable);
+
+            List<object> aRow = new List<object>();
         }
 
         private List<string> CreateColumnHeaders(int theCount)
@@ -71,12 +70,7 @@ namespace Sirius.DragDropControl
             {
                 var a26ScaleNumber = aI.ToNumber(26);
                 List<string> aHeader = new List<string>();
-                for (int aIndex = 0; aIndex < a26ScaleNumber.Count; aIndex++)
-                {
-                    aHeader.Add(aAlphabet[aI]);
-                }
-
-                aResult.Add(string.Join(string.Empty, aHeader.ToArray()));
+                aResult.Add(string.Join(string.Empty, a26ScaleNumber.Select(aBit => aAlphabet[aBit]).ToArray()));
             }
 
             return aResult;
