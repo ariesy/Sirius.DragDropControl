@@ -54,6 +54,7 @@ namespace Sirius.DragDropControl
                 aDataTable.Columns.Add(aHeader);
             }
 
+            object[] columnLabelsData = CreateColumnLabelsData(theParameters);
             foreach (var aRowLabel in theParameters.RowLabels)
             {
                 for (int aI = 0; aI < theParameters.ColumnLabels.Count; aI++)
@@ -79,6 +80,11 @@ namespace Sirius.DragDropControl
             }
             
             innerControl = new DragDropUserControl(aDataTable);
+        }
+
+        private object[] CreateColumnLabelsData(Parameters theParameters)
+        {
+            throw new NotImplementedException();
         }
 
         private List<string> CreateColumnHeaders(int theCount)
