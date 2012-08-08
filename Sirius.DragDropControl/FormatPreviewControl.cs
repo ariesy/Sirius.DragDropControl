@@ -39,22 +39,46 @@ namespace Sirius.DragDropControl
         {
             InitializeComponent();
             InitializeInnerControl(theParameters);
+            Controls.Add(innerControl);
         }
 
         private void InitializeInnerControl(Parameters theParameters)
         {
             DataTable aDataTable = new DataTable();
             int aColumnCount = theParameters.RowLabels.Aggregate(1, (current, aLabel) => current * theParameters.Data[aLabel].Count);
+            aColumnCount += theParameters.ColumnLabels.Count;
 
-            var aColumnHeaders = CreateColumnHeaders(theParameters.Data[theParameters.RowLabels[0]].Count);
+            var aColumnHeaders = CreateColumnHeaders(aColumnCount);
             foreach (var aHeader in aColumnHeaders)
             {
                 aDataTable.Columns.Add(aHeader);
             }
 
-            innerControl = new DragDropUserControl(aDataTable);
+            foreach (var aRowLabel in theParameters.RowLabels)
+            {
+                for (int aI = 0; aI < theParameters.ColumnLabels.Count; aI++)
+                {
+                    List<object> aRow = new List<object>();
+                    aRow.Add(string.Empty);
+                    foreach (var aRowData in theParameters.Data[aRowLabel])
+                    {
+                        int aCount = theParameters.Data[aRowLabel].Count;
+                        for (int i = 0; i < aColumnCount / aCount; i++)
+                        {
+                            aRow.Add(aRowData);
+                        }
+                    }
 
-            List<object> aRow = new List<object>();
+                    aDataTable.Rows.Add(aRow.ToArray());
+                }
+            }
+
+            foreach (var aColumnLabel in theParameters.ColumnLabels)
+            {
+                List<object> aRow = new List<object>();
+            }
+            
+            innerControl = new DragDropUserControl(aDataTable);
         }
 
         private List<string> CreateColumnHeaders(int theCount)
