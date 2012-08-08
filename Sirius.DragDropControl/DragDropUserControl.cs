@@ -11,11 +11,24 @@ namespace Sirius.DragDropControl
 {
     public partial class DragDropUserControl : UserControl
     {
+        public enum SortCriteria
+        {
+            ByRow,
+            ByColumn
+        }
+
+        public enum SortOrder
+        {
+            Asc,
+            Desc
+        }
+
         private Rectangle dragBoxFromMouseDown;
         private int rowIndexFromMouseDown;
         private int rowIndexOfItemUnderMouseToDrop;
         private int columnIndexFromMouseDown;
         private int columnIndexOfItemUnderMouseToDrop;
+        private DataTable data;
 
         public bool AllowRowDragDrop { get; set; }
 
@@ -26,11 +39,30 @@ namespace Sirius.DragDropControl
             get { return dataGridView; }
         }
 
-        public DragDropUserControl()
+        public DragDropUserControl(DataTable theData)
         {
             InitializeComponent();
+            data = theData;
             AllowColumnDragDrop = true;
             AllowRowDragDrop = true;
+            InitalizeDataGridView();
+        }
+
+        private void InitalizeDataGridView()
+        {
+            foreach (DataColumn aColumn in data.Columns)
+            {
+                dataGridView.Columns.Add(aColumn.ColumnName, aColumn.ColumnName);
+            }
+
+            for (int aI = 0; aI < data.Rows.Count; aI++)
+            {
+                DataRow aRow = data.Rows[aI];
+                DataGridViewRow aGridRow = new DataGridViewRow();
+                aGridRow.HeaderCell.Value = (aI + 1).ToString();
+                aGridRow.CreateCells(dataGridView, aRow.ItemArray);
+                dataGridView.Rows.Add(aGridRow);
+            }
         }
 
         private void DataGridViewMouseMove(object theSender, MouseEventArgs theE)
@@ -79,6 +111,11 @@ namespace Sirius.DragDropControl
                     DataGridViewRow aRowToMove = theE.Data.GetData(typeof(DataGridViewRow)) as DataGridViewRow;
                     dataGridView.Rows.RemoveAt(rowIndexFromMouseDown);
                     dataGridView.Rows.Insert(rowIndexOfItemUnderMouseToDrop, aRowToMove);
+
+                    object aSwapRowHeader = dataGridView.Rows[rowIndexFromMouseDown].HeaderCell.Value;
+                    dataGridView.Rows[rowIndexFromMouseDown].HeaderCell.Value =
+                        dataGridView.Rows[rowIndexOfItemUnderMouseToDrop].HeaderCell.Value;
+                    dataGridView.Rows[rowIndexOfItemUnderMouseToDrop].HeaderCell.Value = aSwapRowHeader;
                 }
                 else if (AllowColumnDragDrop)
                 {
@@ -92,5 +129,8 @@ namespace Sirius.DragDropControl
                 }
             }
         }
+
+        //public void Sort(int theIndex, SortCriteria theCriterial, SortOrder theOrder)
+        //{}
     }
 }
