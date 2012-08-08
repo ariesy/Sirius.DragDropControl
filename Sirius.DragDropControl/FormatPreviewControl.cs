@@ -52,6 +52,10 @@ namespace Sirius.DragDropControl
             }
 
             var aColumnHeaders = CreateColumnHeaders(theParameters.Data[theParameters.RowLabels[0]].Count);
+            foreach (var aHeader in aColumnHeaders)
+            {
+                aDataTable.Columns.Add(aHeader);
+            }
         }
 
         private List<string> CreateColumnHeaders(int theCount)
