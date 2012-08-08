@@ -185,7 +185,6 @@ namespace Sirius.DragDropControl
                 }
             }
 
-
             aList.Sort((aSortHelper1, aSortHelper2) => theCompareFunc(aSortHelper1.SortObj, aSortHelper2.SortObj));
 
             for (int aRowIndex = 0; aRowIndex < dataGridView.Rows.Count; aRowIndex++)
