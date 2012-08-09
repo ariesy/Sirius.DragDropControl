@@ -106,4 +106,21 @@ namespace Sirius.DragDropControl
             return aResult;
         }
     }
+
+    public static class NumberScaleConvertor
+    {
+        public static List<int> ToNumber(this int theDecimal, int theScale)
+        {
+            var aResult = new Stack<int>();
+            while (theDecimal > theScale)
+            {
+                aResult.Push(theDecimal % theScale);
+                theDecimal = theDecimal / theScale;
+            }
+
+            aResult.Push(theDecimal);
+
+            return aResult.ToList();
+        }
+    }
 }

@@ -64,7 +64,6 @@
     <Compile Include="FormatPreviewControl.Designer.cs">
       <DependentUpon>FormatPreviewControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="NumberScaleConvertor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="DragDropUserControl.resx">
