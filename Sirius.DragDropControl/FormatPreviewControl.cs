@@ -161,11 +161,30 @@ namespace Sirius.DragDropControl
             }
 
             innerControl = new DragDropUserControl(aDataTable);
-            innerControl.OnDrag += InnerControlOnDrag;
+            innerControl.OnDrop += InnerControlOnDrop;
         }
 
-        private void InnerControlOnDrag(MouseEventArgs theE)
+        private void InnerControlOnDrop(DragEventArgs theE, int theRowIndexFromMouseDown, int theRowIndexOfItemUnderMouseToDrop, int theColumnIndexFromMouseDown, int theColumnIndexOfItemUnderMouseToDrop)
         {
+            if (theRowIndexFromMouseDown < parameters.RowLabels.Count && theRowIndexOfItemUnderMouseToDrop >= parameters.RowLabels.Count)
+            {
+                innerControl.AllowThisOneRowDragDrop = false;
+            }
+
+            if (theRowIndexFromMouseDown >= parameters.RowLabels.Count && theRowIndexOfItemUnderMouseToDrop < parameters.RowLabels.Count)
+            {
+                innerControl.AllowThisOneRowDragDrop = false;
+            }
+
+            if (theColumnIndexFromMouseDown < parameters.ColumnLabels.Count && theColumnIndexOfItemUnderMouseToDrop >= parameters.ColumnLabels.Count)
+            {
+                innerControl.AllowThisOneColumnDragDrop = false;
+            }
+
+            if (theColumnIndexFromMouseDown >= parameters.ColumnLabels.Count && theColumnIndexOfItemUnderMouseToDrop < parameters.ColumnLabels.Count)
+            {
+                innerControl.AllowThisOneColumnDragDrop = false;
+            }
         }
 
         private List<List<object>> CreateHeadersData(IEnumerable<string> theLabelList)

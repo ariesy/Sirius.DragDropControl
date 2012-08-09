@@ -45,7 +45,7 @@ namespace Sirius.DragDropControl
 
         public bool AllowThisOneColumnDragDrop { get; set; }
 
-        public event Action<MouseEventArgs> OnDrag;
+        public event Action<DragEventArgs, int, int, int, int> OnDrop;
 
         public DataGridView InnerDataGridView
         {
@@ -88,11 +88,6 @@ namespace Sirius.DragDropControl
                 {
                     AllowThisOneColumnDragDrop = AllowColumnDragDrop;
                     AllowThisOneRowDragDrop = AllowRowDragDrop;
-                    if (OnDrag != null)
-                    {
-                        OnDrag(theE);
-                    }
-
                     dataGridView.DoDragDrop(dataGridView.Rows[rowIndexFromMouseDown], DragDropEffects.Move);
                 }
             }
@@ -126,42 +121,51 @@ namespace Sirius.DragDropControl
             var aHitTest = dataGridView.HitTest(aClientPoint.X, aClientPoint.Y);
             rowIndexOfItemUnderMouseToDrop = aHitTest.RowIndex;
             columnIndexOfItemUnderMouseToDrop = aHitTest.ColumnIndex;
-            if (theE.Effect == DragDropEffects.Move)
-            {
-                if (AllowThisOneRowDragDrop && rowIndexFromMouseDown != rowIndexOfItemUnderMouseToDrop)
-                {
-                    DataGridViewRow aRowToMove = theE.Data.GetData(typeof(DataGridViewRow)) as DataGridViewRow;
-                    dataGridView.Rows.RemoveAt(rowIndexFromMouseDown);
-                    dataGridView.Rows.Insert(rowIndexOfItemUnderMouseToDrop, aRowToMove);
 
-                    object aSwapRowHeader = dataGridView.Rows[rowIndexFromMouseDown].HeaderCell.Value;
-                    dataGridView.Rows[rowIndexFromMouseDown].HeaderCell.Value =
-                        dataGridView.Rows[rowIndexOfItemUnderMouseToDrop].HeaderCell.Value;
-                    dataGridView.Rows[rowIndexOfItemUnderMouseToDrop].HeaderCell.Value = aSwapRowHeader;
-                }
-                else if (AllowThisOneColumnDragDrop)
+            if (!(rowIndexFromMouseDown != rowIndexOfItemUnderMouseToDrop && columnIndexFromMouseDown != columnIndexOfItemUnderMouseToDrop))
+            {
+                if (OnDrop != null)
                 {
-                    object aSwapObj;
-                    foreach (DataGridViewRow aRow in dataGridView.Rows)
+                    OnDrop(theE, rowIndexFromMouseDown, rowIndexOfItemUnderMouseToDrop, columnIndexFromMouseDown, columnIndexOfItemUnderMouseToDrop);
+                }
+
+                if (theE.Effect == DragDropEffects.Move)
+                {
+                    if (AllowThisOneRowDragDrop && rowIndexFromMouseDown != rowIndexOfItemUnderMouseToDrop)
                     {
-                        if (columnIndexFromMouseDown < columnIndexOfItemUnderMouseToDrop)
+                        DataGridViewRow aRowToMove = theE.Data.GetData(typeof(DataGridViewRow)) as DataGridViewRow;
+                        dataGridView.Rows.RemoveAt(rowIndexFromMouseDown);
+                        dataGridView.Rows.Insert(rowIndexOfItemUnderMouseToDrop, aRowToMove);
+
+                        object aSwapRowHeader = dataGridView.Rows[rowIndexFromMouseDown].HeaderCell.Value;
+                        dataGridView.Rows[rowIndexFromMouseDown].HeaderCell.Value =
+                            dataGridView.Rows[rowIndexOfItemUnderMouseToDrop].HeaderCell.Value;
+                        dataGridView.Rows[rowIndexOfItemUnderMouseToDrop].HeaderCell.Value = aSwapRowHeader;
+                    }
+                    else if (AllowThisOneColumnDragDrop)
+                    {
+                        object aSwapObj;
+                        foreach (DataGridViewRow aRow in dataGridView.Rows)
                         {
-                            for (int aI = columnIndexFromMouseDown; aI < columnIndexOfItemUnderMouseToDrop; aI++)
+                            if (columnIndexFromMouseDown < columnIndexOfItemUnderMouseToDrop)
                             {
-                                aSwapObj = aRow.Cells[aI].Value;
-                                aRow.Cells[aI].Value =
-                                    aRow.Cells[aI + 1].Value;
-                                aRow.Cells[aI + 1].Value = aSwapObj;
+                                for (int aI = columnIndexFromMouseDown; aI < columnIndexOfItemUnderMouseToDrop; aI++)
+                                {
+                                    aSwapObj = aRow.Cells[aI].Value;
+                                    aRow.Cells[aI].Value =
+                                        aRow.Cells[aI + 1].Value;
+                                    aRow.Cells[aI + 1].Value = aSwapObj;
+                                }
                             }
-                        }
-                        else
-                        {
-                            for (int aI = columnIndexFromMouseDown; aI > columnIndexOfItemUnderMouseToDrop; aI--)
+                            else
                             {
-                                aSwapObj = aRow.Cells[aI].Value;
-                                aRow.Cells[aI].Value =
-                                    aRow.Cells[aI - 1].Value;
-                                aRow.Cells[aI - 1].Value = aSwapObj;
+                                for (int aI = columnIndexFromMouseDown; aI > columnIndexOfItemUnderMouseToDrop; aI--)
+                                {
+                                    aSwapObj = aRow.Cells[aI].Value;
+                                    aRow.Cells[aI].Value =
+                                        aRow.Cells[aI - 1].Value;
+                                    aRow.Cells[aI - 1].Value = aSwapObj;
+                                }
                             }
                         }
                     }
