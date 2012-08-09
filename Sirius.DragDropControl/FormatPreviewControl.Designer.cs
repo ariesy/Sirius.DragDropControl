@@ -1,6 +1,6 @@
 ﻿namespace Sirius.DragDropControl
 {
-    partial class FormatPreviewControl
+    public partial class FormatPreviewControl
     {
         /// <summary> 
         /// Required designer variable.
@@ -17,6 +17,7 @@
             {
                 components.Dispose();
             }
+
             base.Dispose(disposing);
         }
 
