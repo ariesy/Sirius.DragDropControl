@@ -11,6 +11,7 @@ namespace Sirius.DragDropControl
 {
     public partial class DragDropUserControl : UserControl
     {
+        #region NestedClasses
         public enum SortBy
         {
             ByRow,
@@ -27,7 +28,8 @@ namespace Sirius.DragDropControl
             {
                 Values = new List<object>();
             }
-        }
+        } 
+        #endregion
 
         private Rectangle dragBoxFromMouseDown;
         private int rowIndexFromMouseDown;
@@ -38,6 +40,12 @@ namespace Sirius.DragDropControl
         public bool AllowRowDragDrop { get; set; }
 
         public bool AllowColumnDragDrop { get; set; }
+
+        public bool AllowThisOneRowDragDrop { get; set; }
+
+        public bool AllowThisOneColumnDragDrop { get; set; }
+
+        public event Action<MouseEventArgs> OnDrag;
 
         public DataGridView InnerDataGridView
         {
@@ -52,6 +60,7 @@ namespace Sirius.DragDropControl
             InitalizeDataGridView(theData);
         }
 
+        #region private methods
         private void InitalizeDataGridView(DataTable theData)
         {
             foreach (DataColumn aColumn in theData.Columns)
@@ -77,6 +86,13 @@ namespace Sirius.DragDropControl
             {
                 if (dragBoxFromMouseDown != Rectangle.Empty && !dragBoxFromMouseDown.Contains(theE.X, theE.Y))
                 {
+                    AllowThisOneColumnDragDrop = AllowColumnDragDrop;
+                    AllowThisOneRowDragDrop = AllowRowDragDrop;
+                    if (OnDrag != null)
+                    {
+                        OnDrag(theE);
+                    }
+
                     dataGridView.DoDragDrop(dataGridView.Rows[rowIndexFromMouseDown], DragDropEffects.Move);
                 }
             }
@@ -112,7 +128,7 @@ namespace Sirius.DragDropControl
             columnIndexOfItemUnderMouseToDrop = aHitTest.ColumnIndex;
             if (theE.Effect == DragDropEffects.Move)
             {
-                if (AllowRowDragDrop && rowIndexFromMouseDown != rowIndexOfItemUnderMouseToDrop)
+                if (AllowThisOneRowDragDrop && rowIndexFromMouseDown != rowIndexOfItemUnderMouseToDrop)
                 {
                     DataGridViewRow aRowToMove = theE.Data.GetData(typeof(DataGridViewRow)) as DataGridViewRow;
                     dataGridView.Rows.RemoveAt(rowIndexFromMouseDown);
@@ -123,17 +139,37 @@ namespace Sirius.DragDropControl
                         dataGridView.Rows[rowIndexOfItemUnderMouseToDrop].HeaderCell.Value;
                     dataGridView.Rows[rowIndexOfItemUnderMouseToDrop].HeaderCell.Value = aSwapRowHeader;
                 }
-                else if (AllowColumnDragDrop)
+                else if (AllowThisOneColumnDragDrop)
                 {
                     object aSwapObj;
                     foreach (DataGridViewRow aRow in dataGridView.Rows)
                     {
-                        aSwapObj = aRow.Cells[columnIndexFromMouseDown].Value;
-                        aRow.Cells[columnIndexFromMouseDown].Value = aRow.Cells[columnIndexOfItemUnderMouseToDrop].Value;
-                        aRow.Cells[columnIndexOfItemUnderMouseToDrop].Value = aSwapObj;
+                        if (columnIndexFromMouseDown < columnIndexOfItemUnderMouseToDrop)
+                        {
+                            for (int aI = columnIndexFromMouseDown; aI < columnIndexOfItemUnderMouseToDrop; aI++)
+                            {
+                                aSwapObj = aRow.Cells[aI].Value;
+                                aRow.Cells[aI].Value =
+                                    aRow.Cells[aI + 1].Value;
+                                aRow.Cells[aI + 1].Value = aSwapObj;
+                            }
+                        }
+                        else
+                        {
+                            for (int aI = columnIndexFromMouseDown; aI > columnIndexOfItemUnderMouseToDrop; aI--)
+                            {
+                                aSwapObj = aRow.Cells[aI].Value;
+                                aRow.Cells[aI].Value =
+                                    aRow.Cells[aI - 1].Value;
+                                aRow.Cells[aI - 1].Value = aSwapObj;
+                            }
+                        }
                     }
                 }
             }
+
+            AllowThisOneRowDragDrop = AllowRowDragDrop;
+            AllowThisOneColumnDragDrop = AllowColumnDragDrop;
         }
 
         private void SortByRow(int theIndex, Comparison<object> theCompareFunc)
@@ -197,8 +233,10 @@ namespace Sirius.DragDropControl
                     aRow.Cells[aCellIndex].Value = aList[aRowIndex].Values[aCellIndex];
                 }
             }
-        }
+        } 
+        #endregion
 
+        #region public methods
         public void Sort(int theIndex, SortBy theSortBy, Comparison<object> theCompareFunc)
         {
             if (theSortBy == SortBy.ByRow)
@@ -209,6 +247,7 @@ namespace Sirius.DragDropControl
             {
                 SortByColumn(theIndex, theCompareFunc);
             }
-        }
+        } 
+        #endregion
     }
 }

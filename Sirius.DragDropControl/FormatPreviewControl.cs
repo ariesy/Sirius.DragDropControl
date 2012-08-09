@@ -161,6 +161,11 @@ namespace Sirius.DragDropControl
             }
 
             innerControl = new DragDropUserControl(aDataTable);
+            innerControl.OnDrag += InnerControlOnDrag;
+        }
+
+        private void InnerControlOnDrag(MouseEventArgs theE)
+        {
         }
 
         private List<List<object>> CreateHeadersData(IEnumerable<string> theLabelList)
