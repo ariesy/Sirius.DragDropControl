@@ -12,6 +12,13 @@ namespace Sirius.DragDropControl
     public partial class FormatPreviewControl : UserControl
     {
         #region NestedClasses
+
+        public enum SortOn
+        {
+            RowLabels,
+            ColumnLabels
+        }
+
         public enum SortOrder
         {
             Asc,
@@ -55,9 +62,65 @@ namespace Sirius.DragDropControl
             Controls.Add(innerControl);
         }
 
-        public void Sort()
+        public void Sort(SortOn theSortOn, string theLabel, SortOrder theOrder)
         {
-            throw new NotImplementedException();
+            DragDropUserControl.SortBy aSortBy;
+            int aSortIndex;
+            if (theSortOn == SortOn.ColumnLabels)
+            {
+                aSortBy = DragDropUserControl.SortBy.ByColumn;
+                aSortIndex = parameters.ColumnLabels.IndexOf(theLabel);
+            }
+            else
+            {
+                aSortBy = DragDropUserControl.SortBy.ByRow;
+                aSortIndex = parameters.RowLabels.IndexOf(theLabel);
+            }
+
+            innerControl.Sort(
+                aSortIndex,
+                aSortBy,
+                (aItem1, aItem2) =>
+                    {
+                        if (aItem1 == null && aItem2 == null)
+                        {
+                            return 0;
+                        }
+
+                        if (aItem1 == null)
+                        {
+                            return -1;
+                        }
+
+                        if (aItem2 == null)
+                        {
+                            return 1;
+                        }
+
+                        if (string.IsNullOrWhiteSpace(aItem1.ToString()) && string.IsNullOrWhiteSpace(aItem2.ToString()))
+                        {
+                            return 0;
+                        }
+
+                        if (string.IsNullOrWhiteSpace(aItem1.ToString()))
+                        {
+                            return -1;
+                        }
+
+                        if (string.IsNullOrWhiteSpace(aItem2.ToString()))
+                        {
+                            return 1;
+                        }
+
+                        if (theOrder == SortOrder.Asc)
+                        {
+                            return aItem1.ToString().CompareTo(aItem2.ToString());
+                        }
+                        else
+                        {
+                            return aItem2.ToString().CompareTo(aItem1.ToString());
+                        }
+                    });
         }
 
         #region private methods

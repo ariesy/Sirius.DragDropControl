@@ -28,6 +28,8 @@ namespace Sirius.DragDropControl
             aParameter.Data["Data"].Add("one more");
 
             aFormatPreviewControl.Refresh(aParameter);
+
+            aFormatPreviewControl.Sort(FormatPreviewControl.SortOn.RowLabels, "Date", FormatPreviewControl.SortOrder.Desc);
         }
     }
 }
