@@ -37,18 +37,35 @@ namespace Sirius.DragDropControl
         
         private DragDropUserControl innerControl;
 
+        private Parameters parameters;
+
         public FormatPreviewControl(Parameters theParameters)
         {
+            parameters = theParameters;
             InitializeComponent();
-            InitializeInnerControl(theParameters);
+            InitializeInnerControl();
             Controls.Add(innerControl);
         }
 
-        private void InitializeInnerControl(Parameters theParameters)
+        public void Refresh(Parameters theParameters)
+        {
+            parameters = theParameters;
+            Controls.Remove(innerControl);
+            InitializeInnerControl();
+            Controls.Add(innerControl);
+        }
+
+        public void Sort()
+        {
+            throw new NotImplementedException();
+        }
+
+        #region private methods
+        private void InitializeInnerControl()
         {
             DataTable aDataTable = new DataTable();
-            int aColumnCount = theParameters.RowLabels.Aggregate(1, (current, aLabel) => current * theParameters.Data[aLabel].Count);
-            aColumnCount += theParameters.ColumnLabels.Count;
+            int aColumnCount = parameters.RowLabels.Aggregate(1, (current, aLabel) => current * parameters.Data[aLabel].Count);
+            aColumnCount += parameters.ColumnLabels.Count;
 
             var aColumnHeaders = CreateColumnHeaders(aColumnCount);
             foreach (var aHeader in aColumnHeaders)
@@ -56,12 +73,12 @@ namespace Sirius.DragDropControl
                 aDataTable.Columns.Add(aHeader);
             }
 
-            List<List<object>> aRowLabelsData = CreateHeadersData(theParameters, theParameters.RowLabels);
+            List<List<object>> aRowLabelsData = CreateHeadersData(parameters.RowLabels);
 
-            for (int aI = 0; aI < theParameters.RowLabels.Count; aI ++)
+            for (int aI = 0; aI < parameters.RowLabels.Count; aI++)
             {
                 List<object> aRow = new List<object>();
-                for (int aCount = 0; aCount < theParameters.ColumnLabels.Count; aCount++)
+                for (int aCount = 0; aCount < parameters.ColumnLabels.Count; aCount++)
                 {
                     aRow.Add(string.Empty);
                 }
@@ -74,21 +91,21 @@ namespace Sirius.DragDropControl
                 aDataTable.Rows.Add(aRow.ToArray());
             }
 
-            List<List<object>> aColumnLabelsData = CreateHeadersData(theParameters, theParameters.ColumnLabels);
+            List<List<object>> aColumnLabelsData = CreateHeadersData(parameters.ColumnLabels);
             foreach (var aSubList in aColumnLabelsData)
             {
                 aDataTable.Rows.Add(aSubList.ToArray());
             }
-            
+
             innerControl = new DragDropUserControl(aDataTable);
         }
 
-        private List<List<object>> CreateHeadersData(Parameters theParameters, IEnumerable<string> theLabelList)
+        private List<List<object>> CreateHeadersData(IEnumerable<string> theLabelList)
         {
             var aResult = new List<List<object>>();
             var aLabelList = theLabelList.Reverse();
-            
-            return aLabelList.Aggregate(aResult, (current, aLabel) => CreateOne(theParameters.Data[aLabel], current));
+
+            return aLabelList.Aggregate(aResult, (current, aLabel) => CreateOne(parameters.Data[aLabel], current));
         }
 
         private List<List<object>> CreateOne(List<object> theData, List<List<object>> theLastList)
@@ -139,7 +156,8 @@ namespace Sirius.DragDropControl
             }
 
             return aResult;
-        }
+        } 
+        #endregion
     }
 
     public static class NumberScaleConvertor

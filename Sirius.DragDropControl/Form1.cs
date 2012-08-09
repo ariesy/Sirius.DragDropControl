@@ -25,6 +25,10 @@ namespace Sirius.DragDropControl
             var aFormatPreviewControl = new FormatPreviewControl(aParameter);
             panel1.Controls.Add(aFormatPreviewControl);
 
+            aParameter.Data["Data"].Add("one more");
+
+            aFormatPreviewControl.Refresh(aParameter);
+
             //DataTable aTable = new DataTable();
             //aTable.Columns.Add("A");
             //aTable.Columns.Add("B");
