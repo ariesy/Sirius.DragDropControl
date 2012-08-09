@@ -56,7 +56,9 @@ namespace Sirius.DragDropControl
         {
             foreach (DataColumn aColumn in theData.Columns)
             {
-                dataGridView.Columns.Add(aColumn.ColumnName, aColumn.ColumnName);
+                DataGridViewColumn aGridColumn = new DataGridViewColumn();
+                int aColumnIndex = dataGridView.Columns.Add(aColumn.ColumnName, aColumn.ColumnName);
+                dataGridView.Columns[aColumnIndex].SortMode = DataGridViewColumnSortMode.NotSortable;
             }
 
             for (int aI = 0; aI < theData.Rows.Count; aI++)

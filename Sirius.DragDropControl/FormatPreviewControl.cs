@@ -11,6 +11,7 @@ namespace Sirius.DragDropControl
 {
     public partial class FormatPreviewControl : UserControl
     {
+        #region NestedClasses
         public enum SortOrder
         {
             Asc,
@@ -31,7 +32,8 @@ namespace Sirius.DragDropControl
                 ColumnLabels = new List<string>();
                 Data = new Dictionary<string, List<object>>();
             }
-        }
+        } 
+        #endregion
         
         private DragDropUserControl innerControl;
 
@@ -54,37 +56,70 @@ namespace Sirius.DragDropControl
                 aDataTable.Columns.Add(aHeader);
             }
 
-            object[] columnLabelsData = CreateColumnLabelsData(theParameters);
-            foreach (var aRowLabel in theParameters.RowLabels)
-            {
-                for (int aI = 0; aI < theParameters.ColumnLabels.Count; aI++)
-                {
-                    List<object> aRow = new List<object>();
-                    aRow.Add(string.Empty);
-                    foreach (var aRowData in theParameters.Data[aRowLabel])
-                    {
-                        int aCount = theParameters.Data[aRowLabel].Count;
-                        for (int i = 0; i < aColumnCount / aCount; i++)
-                        {
-                            aRow.Add(aRowData);
-                        }
-                    }
+            List<List<object>> aRowLabelsData = CreateHeadersData(theParameters, theParameters.RowLabels);
 
-                    aDataTable.Rows.Add(aRow.ToArray());
-                }
-            }
-
-            foreach (var aColumnLabel in theParameters.ColumnLabels)
+            for (int aI = 0; aI < theParameters.RowLabels.Count; aI ++)
             {
                 List<object> aRow = new List<object>();
+                for (int aCount = 0; aCount < theParameters.ColumnLabels.Count; aCount++)
+                {
+                    aRow.Add(string.Empty);
+                }
+
+                foreach (var aSubList in aRowLabelsData)
+                {
+                    aRow.Add(aSubList[aI]);
+                }
+
+                aDataTable.Rows.Add(aRow.ToArray());
+            }
+
+            List<List<object>> aColumnLabelsData = CreateHeadersData(theParameters, theParameters.ColumnLabels);
+            foreach (var aSubList in aColumnLabelsData)
+            {
+                aDataTable.Rows.Add(aSubList.ToArray());
             }
             
             innerControl = new DragDropUserControl(aDataTable);
         }
 
-        private object[] CreateColumnLabelsData(Parameters theParameters)
+        private List<List<object>> CreateHeadersData(Parameters theParameters, IEnumerable<string> theLabelList)
         {
-            throw new NotImplementedException();
+            var aResult = new List<List<object>>();
+            var aLabelList = theLabelList.Reverse();
+            
+            return aLabelList.Aggregate(aResult, (current, aLabel) => CreateOne(theParameters.Data[aLabel], current));
+        }
+
+        private List<List<object>> CreateOne(List<object> theData, List<List<object>> theLastList)
+        {
+            if (theLastList == null)
+            {
+                theLastList = new List<List<object>>();
+            }
+
+            var aNewList = new List<List<object>>();
+            foreach (var aItem in theData)
+            {
+                if (theLastList.Count == 0)
+                {
+                    var aNewSubList = new List<object>();
+                    aNewSubList.Add(aItem);
+                    aNewList.Add(aNewSubList);
+                }
+                else
+                {
+                    foreach (var aSubList in theLastList)
+                    {
+                        var aNewSubList = new List<object>();
+                        aNewSubList.Add(aItem);
+                        aNewSubList.AddRange(aSubList);
+                        aNewList.Add(aNewSubList);
+                    }
+                }
+            }
+
+            return aNewList;
         }
 
         private List<string> CreateColumnHeaders(int theCount)
