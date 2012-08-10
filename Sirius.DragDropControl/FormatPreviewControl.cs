@@ -162,13 +162,42 @@ namespace Sirius.DragDropControl
 
             innerControl = new DragDropUserControl(aDataTable);
             innerControl.OnDrop += InnerControlOnDrop;
-            innerControl.InnerDataGridView.CellPainting += InnerDataGridViewCellPainting;
+            ChangeInerControlStyle();
         }
 
-        private void InnerDataGridViewCellPainting(object sender, DataGridViewCellPaintingEventArgs e)
+        private void ChangeInerControlStyle()
         {
-            if (e.RowIndex < 0 && e.ColumnIndex < 0)
+            var aFont = innerControl.InnerDataGridView.DefaultCellStyle.Font;
+            innerControl.InnerDataGridView.DefaultCellStyle.Font = new Font(aFont, FontStyle.Bold);
+            innerControl.InnerDataGridView.CellBorderStyle = DataGridViewCellBorderStyle.Single;
+            innerControl.InnerDataGridView.GridColor = ColorTranslator.FromHtml("#D0D7E5");
+
+            DataGridViewCell aFirstCell = innerControl.InnerDataGridView.Rows[0].Cells[0];
+            var aStyle = new DataGridViewCellStyle(aFirstCell.InheritedStyle);
+            aStyle.BackColor = ColorTranslator.FromHtml("#A9C4E9");
+            aStyle.SelectionBackColor = aStyle.BackColor;
+            aFirstCell.Style = aStyle;
+
+            for (int aI = 1; aI < innerControl.InnerDataGridView.Columns.Count; aI++)
             {
+                var aCell = innerControl.InnerDataGridView.Rows[0].Cells[aI];
+                var aCellStype = new DataGridViewCellStyle(aCell.InheritedStyle);
+                aCellStype.BackColor = ColorTranslator.FromHtml("#DFE6EF");
+                aCellStype.SelectionBackColor = aCellStype.BackColor;
+                aCellStype.SelectionForeColor = aCellStype.ForeColor;
+                aCellStype.Font = new Font(aCellStype.Font, FontStyle.Regular);
+                aCell.Style = aCellStype;
+            }
+
+            for (int aI = 1; aI < innerControl.InnerDataGridView.Rows.Count; aI++)
+            {
+                var aCell = innerControl.InnerDataGridView.Rows[aI].Cells[0];
+                var aCellStype = new DataGridViewCellStyle(aCell.InheritedStyle);
+                aCellStype.Font = new Font(aCellStype.Font, FontStyle.Regular);
+                aCellStype.BackColor = ColorTranslator.FromHtml("#E4ECF7");
+                aCellStype.SelectionBackColor = aCellStype.BackColor;
+                aCellStype.SelectionForeColor = aCellStype.ForeColor;
+                aCell.Style = aCellStype;
             }
         }
 

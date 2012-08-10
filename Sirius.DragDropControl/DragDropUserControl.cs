@@ -151,10 +151,10 @@ namespace Sirius.DragDropControl
                         dataGridView.Rows.RemoveAt(rowIndexFromMouseDown);
                         dataGridView.Rows.Insert(rowIndexOfItemUnderMouseToDrop, aRowToMove);
 
-                        object aSwapRowHeader = dataGridView.Rows[rowIndexFromMouseDown].HeaderCell.Value;
-                        dataGridView.Rows[rowIndexFromMouseDown].HeaderCell.Value =
-                            dataGridView.Rows[rowIndexOfItemUnderMouseToDrop].HeaderCell.Value;
-                        dataGridView.Rows[rowIndexOfItemUnderMouseToDrop].HeaderCell.Value = aSwapRowHeader;
+                        object aSwapRowHeader = dataGridView.Rows[rowIndexFromMouseDown].Cells[0].Value;
+                        dataGridView.Rows[rowIndexFromMouseDown].Cells[0].Value =
+                            dataGridView.Rows[rowIndexOfItemUnderMouseToDrop].Cells[0].Value;
+                        dataGridView.Rows[rowIndexOfItemUnderMouseToDrop].Cells[0].Value = aSwapRowHeader;
 
                         dataGridView.Rows[rowIndexOfItemUnderMouseToDrop].Cells[columnIndexOfItemUnderMouseToDrop].Selected = true;
                     }
@@ -163,6 +163,11 @@ namespace Sirius.DragDropControl
                         object aSwapObj;
                         foreach (DataGridViewRow aRow in dataGridView.Rows)
                         {
+                            if (aRow.Index == 0)
+                            {
+                                continue;
+                            }
+
                             if (columnIndexFromMouseDown < columnIndexOfItemUnderMouseToDrop)
                             {
                                 for (int aI = columnIndexFromMouseDown; aI < columnIndexOfItemUnderMouseToDrop; aI++)
