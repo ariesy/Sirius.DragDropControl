@@ -78,6 +78,8 @@ namespace Sirius.DragDropControl
                 aGridRow.CreateCells(dataGridView, aRow.ItemArray);
                 dataGridView.Rows.Add(aGridRow);
             }
+
+            dataGridView.RowHeadersDefaultCellStyle.Padding = new Padding(dataGridView.RowHeadersWidth);
         }
 
         private void DataGridViewMouseMove(object theSender, MouseEventArgs theE)
@@ -141,6 +143,8 @@ namespace Sirius.DragDropControl
                         dataGridView.Rows[rowIndexFromMouseDown].HeaderCell.Value =
                             dataGridView.Rows[rowIndexOfItemUnderMouseToDrop].HeaderCell.Value;
                         dataGridView.Rows[rowIndexOfItemUnderMouseToDrop].HeaderCell.Value = aSwapRowHeader;
+
+                        dataGridView.Rows[rowIndexOfItemUnderMouseToDrop].Cells[columnIndexOfItemUnderMouseToDrop].Selected = true;
                     }
                     else if (AllowThisOneColumnDragDrop)
                     {
@@ -168,6 +172,8 @@ namespace Sirius.DragDropControl
                                 }
                             }
                         }
+
+                        dataGridView.Rows[rowIndexOfItemUnderMouseToDrop].Cells[columnIndexOfItemUnderMouseToDrop].Selected = true;
                     }
                 }
             }
