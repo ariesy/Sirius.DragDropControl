@@ -18,9 +18,11 @@ namespace Sirius.DragDropControl
             ByColumn
         }
 
-        private class SortHelper
+        public class SortHelper
         {
             public object SortObj { get; set; }
+
+            public int OriginalPosition { get; set; }
 
             public List<object> Values { get; private set; }
 
@@ -199,12 +201,14 @@ namespace Sirius.DragDropControl
             AllowThisOneColumnDragDrop = AllowColumnDragDrop;
         }
 
-        private void SortByRow(int theIndex, Comparison<object> theCompareFunc)
+        private void SortByRow(int theIndex, Comparison<SortHelper> theCompareFunc)
         {
             List<SortHelper> aList = new List<SortHelper>();
             for (int aI = 1; aI < dataGridView.Columns.Count; aI++)
             {
-                aList.Add(new SortHelper());
+                var aHelper = new SortHelper();
+                aHelper.OriginalPosition = aI;
+                aList.Add(aHelper);
             }
 
             foreach (DataGridViewRow row in dataGridView.Rows)
@@ -225,7 +229,7 @@ namespace Sirius.DragDropControl
                 }
             }
 
-            aList.Sort((aSortHelper1, aSortHelper2) => theCompareFunc(aSortHelper1.SortObj, aSortHelper2.SortObj));
+            aList.Sort((aSortHelper1, aSortHelper2) => theCompareFunc(aSortHelper1, aSortHelper2));
 
             for (int aRowIndex = 1; aRowIndex < dataGridView.Rows.Count; aRowIndex++)
             {
@@ -237,7 +241,7 @@ namespace Sirius.DragDropControl
             }
         }
 
-        private void SortByColumn(int theIndex, Comparison<object> theCompareFunc)
+        private void SortByColumn(int theIndex, Comparison<SortHelper> theCompareFunc)
         {
             List<SortHelper> aList = new List<SortHelper>();
             for (int aRowIndex = 1; aRowIndex < dataGridView.Rows.Count; aRowIndex++)
@@ -245,6 +249,7 @@ namespace Sirius.DragDropControl
                 var aRow = dataGridView.Rows[aRowIndex];
                 var aHelper = new SortHelper();
                 aList.Add(aHelper);
+                aHelper.OriginalPosition = aRowIndex;
                 for (int acellIndex = 1; acellIndex < aRow.Cells.Count; acellIndex++)
                 {
                     aHelper.Values.Add(aRow.Cells[acellIndex].Value);
@@ -255,7 +260,7 @@ namespace Sirius.DragDropControl
                 }
             }
 
-            aList.Sort((aSortHelper1, aSortHelper2) => theCompareFunc(aSortHelper1.SortObj, aSortHelper2.SortObj));
+            aList.Sort((aSortHelper1, aSortHelper2) => theCompareFunc(aSortHelper1, aSortHelper2));
 
             for (int aRowIndex = 1; aRowIndex < dataGridView.Rows.Count; aRowIndex++)
             {
@@ -269,7 +274,7 @@ namespace Sirius.DragDropControl
         #endregion
 
         #region public methods
-        public void Sort(int theIndex, SortBy theSortBy, Comparison<object> theCompareFunc)
+        public void Sort(int theIndex, SortBy theSortBy, Comparison<SortHelper> theCompareFunc)
         {
             if (theSortBy == SortBy.ByRow)
             {

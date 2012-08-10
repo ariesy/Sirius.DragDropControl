@@ -80,11 +80,13 @@ namespace Sirius.DragDropControl
             innerControl.Sort(
                 aSortIndex,
                 aSortBy,
-                (aItem1, aItem2) =>
+                (aHelper1, aHelper2) =>
                     {
+                        var aItem1 = aHelper1.SortObj;
+                        var aItem2 = aHelper2.SortObj;
                         if (aItem1 == null && aItem2 == null)
                         {
-                            return 0;
+                            return aHelper1.OriginalPosition - aHelper2.OriginalPosition;
                         }
 
                         if (aItem1 == null)
@@ -99,7 +101,7 @@ namespace Sirius.DragDropControl
 
                         if (string.IsNullOrWhiteSpace(aItem1.ToString()) && string.IsNullOrWhiteSpace(aItem2.ToString()))
                         {
-                            return 0;
+                            return aHelper1.OriginalPosition - aHelper2.OriginalPosition;
                         }
 
                         if (string.IsNullOrWhiteSpace(aItem1.ToString()))
