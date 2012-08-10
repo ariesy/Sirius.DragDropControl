@@ -63,23 +63,35 @@ namespace Sirius.DragDropControl
         #region private methods
         private void InitalizeDataGridView(DataTable theData)
         {
+            int aHeaderColumnIndex = dataGridView.Columns.Add("FirstColumn", "FirstColumn");
+            DataGridViewColumn aHeaderColumn = dataGridView.Columns[aHeaderColumnIndex];
+            aHeaderColumn.SortMode = DataGridViewColumnSortMode.NotSortable;
+            aHeaderColumn.Width = 20;
+
+            List<string> aHeaderTexts = new List<string>();
+            aHeaderTexts.Add(string.Empty);
             foreach (DataColumn aColumn in theData.Columns)
             {
                 DataGridViewColumn aGridColumn = new DataGridViewColumn();
                 int aColumnIndex = dataGridView.Columns.Add(aColumn.ColumnName, aColumn.ColumnName);
+                aHeaderTexts.Add(aColumn.ColumnName);
                 dataGridView.Columns[aColumnIndex].SortMode = DataGridViewColumnSortMode.NotSortable;
             }
 
+            DataGridViewRow aHeaderRow = new DataGridViewRow();
+            aHeaderRow.CreateCells(dataGridView, aHeaderTexts.ToArray());
+            dataGridView.Rows.Add(aHeaderRow);
             for (int aI = 0; aI < theData.Rows.Count; aI++)
             {
                 DataRow aRow = theData.Rows[aI];
+                List<object> aRowData = new List<object>();
+                aRowData.Add(aI + 1);
+                aRowData.AddRange(aRow.ItemArray);
+                
                 DataGridViewRow aGridRow = new DataGridViewRow();
-                aGridRow.HeaderCell.Value = (aI + 1).ToString();
-                aGridRow.CreateCells(dataGridView, aRow.ItemArray);
+                aGridRow.CreateCells(dataGridView, aRowData.ToArray());
                 dataGridView.Rows.Add(aGridRow);
             }
-
-            dataGridView.RowHeadersDefaultCellStyle.Padding = new Padding(dataGridView.RowHeadersWidth);
         }
 
         private void DataGridViewMouseMove(object theSender, MouseEventArgs theE)
@@ -185,32 +197,37 @@ namespace Sirius.DragDropControl
         private void SortByRow(int theIndex, Comparison<object> theCompareFunc)
         {
             List<SortHelper> aList = new List<SortHelper>();
-            for (int aI = 0; aI < dataGridView.Columns.Count; aI++)
+            for (int aI = 1; aI < dataGridView.Columns.Count; aI++)
             {
                 aList.Add(new SortHelper());
             }
 
             foreach (DataGridViewRow row in dataGridView.Rows)
             {
-                for (int aI = 0; aI < row.Cells.Count; aI++)
+                if (row.Index == 0)
+                {
+                    continue;
+                }
+
+                for (int aI = 1; aI < row.Cells.Count; aI++)
                 {
                     if (row.Index == theIndex)
                     {
-                        aList[aI].SortObj = row.Cells[aI].Value;
+                        aList[aI - 1].SortObj = row.Cells[aI].Value;
                     }
 
-                    aList[aI].Values.Add(row.Cells[aI].Value);
+                    aList[aI - 1].Values.Add(row.Cells[aI].Value);
                 }
             }
 
             aList.Sort((aSortHelper1, aSortHelper2) => theCompareFunc(aSortHelper1.SortObj, aSortHelper2.SortObj));
 
-            for (int aRowIndex = 0; aRowIndex < dataGridView.Rows.Count; aRowIndex++)
+            for (int aRowIndex = 1; aRowIndex < dataGridView.Rows.Count; aRowIndex++)
             {
                 var aRow = dataGridView.Rows[aRowIndex];
-                for (int aCellIndex = 0; aCellIndex < aRow.Cells.Count; aCellIndex++)
+                for (int aCellIndex = 1; aCellIndex < aRow.Cells.Count; aCellIndex++)
                 {
-                    aRow.Cells[aCellIndex].Value = aList[aCellIndex].Values[aRowIndex];
+                    aRow.Cells[aCellIndex].Value = aList[aCellIndex - 1].Values[aRowIndex - 1];
                 }
             }
         }
@@ -218,12 +235,12 @@ namespace Sirius.DragDropControl
         private void SortByColumn(int theIndex, Comparison<object> theCompareFunc)
         {
             List<SortHelper> aList = new List<SortHelper>();
-            for (int aRowIndex = 0; aRowIndex < dataGridView.Rows.Count; aRowIndex++)
+            for (int aRowIndex = 1; aRowIndex < dataGridView.Rows.Count; aRowIndex++)
             {
                 var aRow = dataGridView.Rows[aRowIndex];
                 var aHelper = new SortHelper();
                 aList.Add(aHelper);
-                for (int acellIndex = 0; acellIndex < aRow.Cells.Count; acellIndex++)
+                for (int acellIndex = 1; acellIndex < aRow.Cells.Count; acellIndex++)
                 {
                     aHelper.Values.Add(aRow.Cells[acellIndex].Value);
                     if (acellIndex == theIndex)
@@ -235,12 +252,12 @@ namespace Sirius.DragDropControl
 
             aList.Sort((aSortHelper1, aSortHelper2) => theCompareFunc(aSortHelper1.SortObj, aSortHelper2.SortObj));
 
-            for (int aRowIndex = 0; aRowIndex < dataGridView.Rows.Count; aRowIndex++)
+            for (int aRowIndex = 1; aRowIndex < dataGridView.Rows.Count; aRowIndex++)
             {
                 var aRow = dataGridView.Rows[aRowIndex];
-                for (int aCellIndex = 0; aCellIndex < aRow.Cells.Count; aCellIndex++)
+                for (int aCellIndex = 1; aCellIndex < aRow.Cells.Count; aCellIndex++)
                 {
-                    aRow.Cells[aCellIndex].Value = aList[aRowIndex].Values[aCellIndex];
+                    aRow.Cells[aCellIndex].Value = aList[aRowIndex - 1].Values[aCellIndex - 1];
                 }
             }
         } 

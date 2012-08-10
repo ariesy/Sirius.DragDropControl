@@ -69,12 +69,12 @@ namespace Sirius.DragDropControl
             if (theSortOn == SortOn.ColumnLabels)
             {
                 aSortBy = DragDropUserControl.SortBy.ByColumn;
-                aSortIndex = parameters.ColumnLabels.IndexOf(theLabel);
+                aSortIndex = parameters.ColumnLabels.IndexOf(theLabel) + 1;
             }
             else
             {
                 aSortBy = DragDropUserControl.SortBy.ByRow;
-                aSortIndex = parameters.RowLabels.IndexOf(theLabel);
+                aSortIndex = parameters.RowLabels.IndexOf(theLabel) + 1;
             }
 
             innerControl.Sort(
@@ -162,26 +162,40 @@ namespace Sirius.DragDropControl
 
             innerControl = new DragDropUserControl(aDataTable);
             innerControl.OnDrop += InnerControlOnDrop;
+            innerControl.InnerDataGridView.CellPainting += InnerDataGridViewCellPainting;
+        }
+
+        private void InnerDataGridViewCellPainting(object sender, DataGridViewCellPaintingEventArgs e)
+        {
+            if (e.RowIndex < 0 && e.ColumnIndex < 0)
+            {
+            }
         }
 
         private void InnerControlOnDrop(DragEventArgs theE, int theRowIndexFromMouseDown, int theRowIndexOfItemUnderMouseToDrop, int theColumnIndexFromMouseDown, int theColumnIndexOfItemUnderMouseToDrop)
         {
-            if (theRowIndexFromMouseDown < parameters.RowLabels.Count && theRowIndexOfItemUnderMouseToDrop >= parameters.RowLabels.Count)
+            if (theRowIndexFromMouseDown == 0 || theRowIndexOfItemUnderMouseToDrop == 0 || theColumnIndexFromMouseDown == 0 || theColumnIndexOfItemUnderMouseToDrop == 0)
+            {
+                innerControl.AllowThisOneColumnDragDrop = false;
+                innerControl.AllowThisOneRowDragDrop = false;
+            }
+
+            if (theRowIndexFromMouseDown <= parameters.RowLabels.Count && theRowIndexOfItemUnderMouseToDrop > parameters.RowLabels.Count)
             {
                 innerControl.AllowThisOneRowDragDrop = false;
             }
 
-            if (theRowIndexFromMouseDown >= parameters.RowLabels.Count && theRowIndexOfItemUnderMouseToDrop < parameters.RowLabels.Count)
+            if (theRowIndexFromMouseDown > parameters.RowLabels.Count && theRowIndexOfItemUnderMouseToDrop <= parameters.RowLabels.Count)
             {
                 innerControl.AllowThisOneRowDragDrop = false;
             }
 
-            if (theColumnIndexFromMouseDown < parameters.ColumnLabels.Count && theColumnIndexOfItemUnderMouseToDrop >= parameters.ColumnLabels.Count)
+            if (theColumnIndexFromMouseDown <= parameters.ColumnLabels.Count && theColumnIndexOfItemUnderMouseToDrop > parameters.ColumnLabels.Count)
             {
                 innerControl.AllowThisOneColumnDragDrop = false;
             }
 
-            if (theColumnIndexFromMouseDown >= parameters.ColumnLabels.Count && theColumnIndexOfItemUnderMouseToDrop < parameters.ColumnLabels.Count)
+            if (theColumnIndexFromMouseDown > parameters.ColumnLabels.Count && theColumnIndexOfItemUnderMouseToDrop <= parameters.ColumnLabels.Count)
             {
                 innerControl.AllowThisOneColumnDragDrop = false;
             }
