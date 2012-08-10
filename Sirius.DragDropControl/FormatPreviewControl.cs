@@ -46,15 +46,12 @@ namespace Sirius.DragDropControl
 
         private Parameters parameters;
 
-        public FormatPreviewControl(Parameters theParameters)
+        public FormatPreviewControl()
         {
-            parameters = theParameters;
             InitializeComponent();
-            InitializeInnerControl();
-            Controls.Add(innerControl);
         }
 
-        public void Refresh(Parameters theParameters)
+        public void LoadData(Parameters theParameters)
         {
             parameters = theParameters;
             Controls.Remove(innerControl);

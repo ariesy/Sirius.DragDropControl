@@ -22,12 +22,14 @@ namespace Sirius.DragDropControl
             aParameter.Data["Entity"] = new List<object> { "Direct Group", "Fortor Motor", "Home Depot" };
             aParameter.Data["Date"] = new List<object> { 2011, 2012 };
             aParameter.Data["Data"] = new List<object> { "Deposit", "debt" };
-            var aFormatPreviewControl = new FormatPreviewControl(aParameter);
+            var aFormatPreviewControl = new FormatPreviewControl();
             panel1.Controls.Add(aFormatPreviewControl);
+
+            aFormatPreviewControl.Refresh();
 
             aParameter.Data["Data"].Add("one more");
 
-            aFormatPreviewControl.Refresh(aParameter);
+            aFormatPreviewControl.LoadData(aParameter);
 
             aFormatPreviewControl.Sort(FormatPreviewControl.SortOn.RowLabels, "Date", FormatPreviewControl.SortOrder.Desc);
 
