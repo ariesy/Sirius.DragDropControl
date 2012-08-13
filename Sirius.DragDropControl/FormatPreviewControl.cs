@@ -60,6 +60,10 @@ namespace Sirius.DragDropControl
             }
         } 
         #endregion
+
+        private const int TOTAL_ROW = 17;
+
+        private int dragableRowCount;
         
         private DragDropUserControl innerControl;
 
@@ -118,20 +122,6 @@ namespace Sirius.DragDropControl
                     {
                         var aItem1 = aHelper1.SortObj;
                         var aItem2 = aHelper2.SortObj;
-                        if (aItem1 == null && aItem2 == null)
-                        {
-                            return aHelper1.OriginalPosition - aHelper2.OriginalPosition;
-                        }
-
-                        if (aItem1 == null)
-                        {
-                            return -1;
-                        }
-
-                        if (aItem2 == null)
-                        {
-                            return 1;
-                        }
 
                         if (string.IsNullOrWhiteSpace(aItem1.ToString()) && string.IsNullOrWhiteSpace(aItem2.ToString()))
                         {
@@ -140,11 +130,21 @@ namespace Sirius.DragDropControl
 
                         if (string.IsNullOrWhiteSpace(aItem1.ToString()))
                         {
+                            if (IsAllValueBlank(aHelper1.Values))
+                            {
+                                return 1;
+                            }
+
                             return -1;
                         }
 
                         if (string.IsNullOrWhiteSpace(aItem2.ToString()))
                         {
+                            if (IsAllValueBlank(aHelper2.Values))
+                            {
+                                return -1;
+                            }
+
                             return 1;
                         }
 
@@ -160,6 +160,20 @@ namespace Sirius.DragDropControl
         }
 
         #region private methods
+        private bool IsAllValueBlank(List<object> theList)
+        {
+            bool aResult = true;
+            foreach (var aItem in theList)
+            {
+                if (aItem != null && !string.IsNullOrWhiteSpace(aItem.ToString()))
+                {
+                    aResult = false;
+                }
+            }
+
+            return aResult;
+        }
+
         private void InitializeInnerControl()
         {
             DataTable aDataTable = new DataTable();
@@ -196,6 +210,12 @@ namespace Sirius.DragDropControl
                 aDataTable.Rows.Add(aSubList.ToArray());
             }
 
+            dragableRowCount = aDataTable.Rows.Count;
+            for (int aI = dragableRowCount; aI < TOTAL_ROW; aI++)
+            {
+                aDataTable.Rows.Add(new List<object>().ToArray());
+            }
+
             innerControl = new DragDropUserControl(aDataTable);
             innerControl.OnDrop += InnerControlOnDrop;
             ChangeInerControlStyle();
@@ -207,6 +227,8 @@ namespace Sirius.DragDropControl
             innerControl.InnerDataGridView.DefaultCellStyle.Font = new Font(aFont, FontStyle.Bold);
             innerControl.InnerDataGridView.CellBorderStyle = DataGridViewCellBorderStyle.Single;
             innerControl.InnerDataGridView.GridColor = ColorTranslator.FromHtml("#D0D7E5");
+
+            innerControl.InnerDataGridView.Size = new Size { Height = 340, Width = 662 };
 
             DataGridViewCell aFirstCell = innerControl.InnerDataGridView.Rows[0].Cells[0];
             var aStyle = new DataGridViewCellStyle(aFirstCell.InheritedStyle);
@@ -273,6 +295,11 @@ namespace Sirius.DragDropControl
             if (aColumnIndexFromMouseDown > parameters.ColumnLabels.Count && aColumnIndexOfItemUnderMouseToDrop <= parameters.ColumnLabels.Count)
             {
                 aSender.AllowThisOneColumnDragDrop = false;
+            }
+
+            if (aRowIndexFromMouseDown > dragableRowCount || aRowIndexOfItemUnderMouseToDrop > dragableRowCount)
+            {
+                aSender.AllowThisOneRowDragDrop = false;
             }
 
             if (aRowIndexFromMouseDown == aRowIndexOfItemUnderMouseToDrop)
