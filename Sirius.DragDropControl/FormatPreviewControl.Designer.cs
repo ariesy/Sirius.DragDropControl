@@ -36,7 +36,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Name = "FormatPreviewControl";
-            this.Size = new System.Drawing.Size(662, 340);
+            this.Size = new System.Drawing.Size(1327, 728);
             this.ResumeLayout(false);
 
         }

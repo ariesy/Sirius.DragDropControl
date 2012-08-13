@@ -33,7 +33,7 @@ namespace Sirius.DragDropControl
 
             aFormatPreviewControl.Sort(FormatPreviewControl.SortOn.RowLabels, "Date", FormatPreviewControl.SortOrder.Desc);
 
-            aFormatPreviewControl.Sort(FormatPreviewControl.SortOn.ColumnLabels, "Entity", FormatPreviewControl.SortOrder.Desc);
+            aFormatPreviewControl.Sort(FormatPreviewControl.SortOn.ColumnLabels, "Entity", FormatPreviewControl.SortOrder.Asc);
 
             aFormatPreviewControl.ReOrdered += FormatPreviewControlReOrdered;
         }

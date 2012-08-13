@@ -148,6 +148,11 @@ namespace Sirius.DragDropControl
                             return 1;
                         }
 
+                        if (aItem1 == aItem2)
+                        {
+                            return aHelper1.OriginalPosition - aHelper2.OriginalPosition;
+                        }
+
                         if (theOrder == SortOrder.Asc)
                         {
                             return aItem1.ToString().CompareTo(aItem2.ToString());
@@ -211,7 +216,7 @@ namespace Sirius.DragDropControl
             }
 
             dragableRowCount = aDataTable.Rows.Count;
-            for (int aI = dragableRowCount; aI < TOTAL_ROW; aI++)
+            for (int aI = dragableRowCount + 1; aI < TOTAL_ROW; aI++)
             {
                 aDataTable.Rows.Add(new List<object>().ToArray());
             }
@@ -229,6 +234,8 @@ namespace Sirius.DragDropControl
             innerControl.InnerDataGridView.GridColor = ColorTranslator.FromHtml("#D0D7E5");
 
             innerControl.InnerDataGridView.Size = new Size { Height = 340, Width = 662 };
+            innerControl.Size = new Size { Height = 400, Width = 668 };
+            innerControl.InnerDataGridView.Left = innerControl.InnerDataGridView.Left + 3;
 
             DataGridViewCell aFirstCell = innerControl.InnerDataGridView.Rows[0].Cells[0];
             var aStyle = new DataGridViewCellStyle(aFirstCell.InheritedStyle);
@@ -236,6 +243,7 @@ namespace Sirius.DragDropControl
             aStyle.SelectionBackColor = aStyle.BackColor;
             aFirstCell.Style = aStyle;
 
+            innerControl.InnerDataGridView.Columns[0].Width = 25;
             for (int aI = 1; aI < innerControl.InnerDataGridView.Columns.Count; aI++)
             {
                 var aCell = innerControl.InnerDataGridView.Rows[0].Cells[aI];
@@ -245,8 +253,11 @@ namespace Sirius.DragDropControl
                 aCellStype.SelectionForeColor = aCellStype.ForeColor;
                 aCellStype.Font = new Font(aCellStype.Font, FontStyle.Regular);
                 aCell.Style = aCellStype;
+
+                innerControl.InnerDataGridView.Columns[aI].Width = 100;
             }
 
+            innerControl.InnerDataGridView.Rows[0].Height = 20;
             for (int aI = 1; aI < innerControl.InnerDataGridView.Rows.Count; aI++)
             {
                 var aCell = innerControl.InnerDataGridView.Rows[aI].Cells[0];
@@ -256,6 +267,8 @@ namespace Sirius.DragDropControl
                 aCellStype.SelectionBackColor = aCellStype.BackColor;
                 aCellStype.SelectionForeColor = aCellStype.ForeColor;
                 aCell.Style = aCellStype;
+
+                innerControl.InnerDataGridView.Rows[aI].Height = 20;
             }
         }
 
@@ -439,6 +452,8 @@ namespace Sirius.DragDropControl
         } 
         #endregion
     }
+
+    
 
     public static class NumberScaleConvertor
     {
