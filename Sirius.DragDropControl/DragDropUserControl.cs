@@ -30,7 +30,29 @@ namespace Sirius.DragDropControl
             {
                 Values = new List<object>();
             }
-        } 
+        }
+
+        public class DragDropEventArgs : DragEventArgs
+        {
+            private DragEventArgs innerArgs;
+
+            public int RowIndexFromMouseDown { get; private set; }
+
+            public int RowIndexOfItemUnderMouseToDrop { get; private set; }
+
+            public int ColumnIndexFromMouseDown { get; private set; }
+
+            public int ColumnIndexOfItemUnderMouseToDrop { get; private set; }
+
+            public DragDropEventArgs(DragEventArgs theE, int theRowIndexFromMouseDown, int theRowIndexOfItemUnderMouseToDrop, int theColumnIndexFromMouseDown, int theColumnIndexOfItemUnderMouseToDrop) : base(theE.Data, theE.KeyState, theE.X, theE.Y, theE.AllowedEffect, theE.Effect)
+            {
+                innerArgs = theE;
+                RowIndexFromMouseDown = theRowIndexFromMouseDown;
+                RowIndexOfItemUnderMouseToDrop = theRowIndexOfItemUnderMouseToDrop;
+                ColumnIndexFromMouseDown = theColumnIndexFromMouseDown;
+                ColumnIndexOfItemUnderMouseToDrop = theColumnIndexOfItemUnderMouseToDrop;
+            }
+        }
         #endregion
 
         private Rectangle dragBoxFromMouseDown;
@@ -47,7 +69,7 @@ namespace Sirius.DragDropControl
 
         public bool AllowThisOneColumnDragDrop { get; set; }
 
-        public event Action<DragEventArgs, int, int, int, int> OnDrop;
+        public event Action<object, DragDropEventArgs> OnDrop;
 
         public DataGridView InnerDataGridView
         {
@@ -142,7 +164,13 @@ namespace Sirius.DragDropControl
             {
                 if (OnDrop != null)
                 {
-                    OnDrop(theE, rowIndexFromMouseDown, rowIndexOfItemUnderMouseToDrop, columnIndexFromMouseDown, columnIndexOfItemUnderMouseToDrop);
+                    DragDropEventArgs aEventArgs = new DragDropEventArgs(
+                        theE, 
+                        rowIndexFromMouseDown,
+                        rowIndexOfItemUnderMouseToDrop,
+                        columnIndexFromMouseDown,
+                        columnIndexOfItemUnderMouseToDrop);
+                    OnDrop(this, aEventArgs);
                 }
 
                 if (theE.Effect == DragDropEffects.Move)

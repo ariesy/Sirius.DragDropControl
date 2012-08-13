@@ -34,6 +34,16 @@ namespace Sirius.DragDropControl
             aFormatPreviewControl.Sort(FormatPreviewControl.SortOn.RowLabels, "Date", FormatPreviewControl.SortOrder.Desc);
 
             aFormatPreviewControl.Sort(FormatPreviewControl.SortOn.ColumnLabels, "Entity", FormatPreviewControl.SortOrder.Desc);
+
+            aFormatPreviewControl.ReOrdered += FormatPreviewControlReOrdered;
+        }
+
+        private void FormatPreviewControlReOrdered(object theSender, FormatPreviewControl.ReOrderEventArgs theE)
+        {
+            var aColumnLabels = string.Join(",", theE.ColumnLabels.ToArray());
+            var aRowLabels = string.Join(",", theE.RowLabels.ToArray());
+
+            MessageBox.Show("Column labels:" + aColumnLabels + "\r\n" + "RowLabels:" + aRowLabels);
         }
     }
 }

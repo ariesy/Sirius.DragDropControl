@@ -13,6 +13,25 @@ namespace Sirius.DragDropControl
     {
         #region NestedClasses
 
+        public class ReOrderEventArgs : EventArgs
+        {
+            public IList<string> RowLabels { get; private set; }
+
+            public IList<string> ColumnLabels { get; private set; }
+
+            public ReOrderEventArgs()
+            {
+                RowLabels = new List<string>();
+                ColumnLabels = new List<string>();
+            }
+
+            public ReOrderEventArgs(IList<string> theRowLabels, IList<string> theColumnLabels)
+            {
+                RowLabels = theRowLabels;
+                ColumnLabels = theColumnLabels;
+            }
+        }
+
         public enum SortOn
         {
             RowLabels,
@@ -46,9 +65,17 @@ namespace Sirius.DragDropControl
 
         private Parameters parameters;
 
+        private Dictionary<int, string> rowLabels;
+
+        private Dictionary<int, string> columnLabels;
+
+        public event Action<object, ReOrderEventArgs> ReOrdered;
+
         public FormatPreviewControl()
         {
             InitializeComponent();
+            rowLabels = new Dictionary<int, string>();
+            columnLabels = new Dictionary<int, string>();
         }
 
         public void LoadData(Parameters theParameters)
@@ -56,6 +83,16 @@ namespace Sirius.DragDropControl
             parameters = theParameters;
             Controls.Remove(innerControl);
             InitializeInnerControl();
+            for (int aRowIdx = 1; aRowIdx <= parameters.RowLabels.Count; aRowIdx++)
+            {
+                rowLabels[aRowIdx] = parameters.RowLabels[aRowIdx - 1];
+            }
+
+            for (int aColumnIdx = 1; aColumnIdx <= parameters.ColumnLabels.Count; aColumnIdx++)
+            {
+                columnLabels[aColumnIdx] = parameters.ColumnLabels[aColumnIdx - 1];
+            }
+             
             Controls.Add(innerControl);
         }
 
@@ -200,32 +237,119 @@ namespace Sirius.DragDropControl
             }
         }
 
-        private void InnerControlOnDrop(DragEventArgs theE, int theRowIndexFromMouseDown, int theRowIndexOfItemUnderMouseToDrop, int theColumnIndexFromMouseDown, int theColumnIndexOfItemUnderMouseToDrop)
+        private void InnerControlOnDrop(object theSender, DragDropUserControl.DragDropEventArgs theE)
         {
-            if (theRowIndexFromMouseDown == 0 || theRowIndexOfItemUnderMouseToDrop == 0 || theColumnIndexFromMouseDown == 0 || theColumnIndexOfItemUnderMouseToDrop == 0)
+            var aSender = theSender as DragDropUserControl;
+            if (aSender == null)
             {
-                innerControl.AllowThisOneColumnDragDrop = false;
-                innerControl.AllowThisOneRowDragDrop = false;
+                return;
             }
 
-            if (theRowIndexFromMouseDown <= parameters.RowLabels.Count && theRowIndexOfItemUnderMouseToDrop > parameters.RowLabels.Count)
+            var aRowIndexFromMouseDown = theE.RowIndexFromMouseDown;
+            var aRowIndexOfItemUnderMouseToDrop = theE.RowIndexOfItemUnderMouseToDrop;
+            var aColumnIndexFromMouseDown = theE.ColumnIndexFromMouseDown;
+            var aColumnIndexOfItemUnderMouseToDrop = theE.ColumnIndexOfItemUnderMouseToDrop;
+            if (aRowIndexFromMouseDown == 0 || aRowIndexOfItemUnderMouseToDrop == 0 || aColumnIndexFromMouseDown == 0 || aColumnIndexOfItemUnderMouseToDrop == 0)
             {
-                innerControl.AllowThisOneRowDragDrop = false;
+                aSender.AllowThisOneColumnDragDrop = false;
+                aSender.AllowThisOneRowDragDrop = false;
             }
 
-            if (theRowIndexFromMouseDown > parameters.RowLabels.Count && theRowIndexOfItemUnderMouseToDrop <= parameters.RowLabels.Count)
+            if (aRowIndexFromMouseDown <= parameters.RowLabels.Count && aRowIndexOfItemUnderMouseToDrop > parameters.RowLabels.Count)
             {
-                innerControl.AllowThisOneRowDragDrop = false;
+                aSender.AllowThisOneRowDragDrop = false;
             }
 
-            if (theColumnIndexFromMouseDown <= parameters.ColumnLabels.Count && theColumnIndexOfItemUnderMouseToDrop > parameters.ColumnLabels.Count)
+            if (aRowIndexFromMouseDown > parameters.RowLabels.Count && aRowIndexOfItemUnderMouseToDrop <= parameters.RowLabels.Count)
             {
-                innerControl.AllowThisOneColumnDragDrop = false;
+                aSender.AllowThisOneRowDragDrop = false;
             }
 
-            if (theColumnIndexFromMouseDown > parameters.ColumnLabels.Count && theColumnIndexOfItemUnderMouseToDrop <= parameters.ColumnLabels.Count)
+            if (aColumnIndexFromMouseDown <= parameters.ColumnLabels.Count && aColumnIndexOfItemUnderMouseToDrop > parameters.ColumnLabels.Count)
             {
-                innerControl.AllowThisOneColumnDragDrop = false;
+                aSender.AllowThisOneColumnDragDrop = false;
+            }
+
+            if (aColumnIndexFromMouseDown > parameters.ColumnLabels.Count && aColumnIndexOfItemUnderMouseToDrop <= parameters.ColumnLabels.Count)
+            {
+                aSender.AllowThisOneColumnDragDrop = false;
+            }
+
+            if (aRowIndexFromMouseDown == aRowIndexOfItemUnderMouseToDrop)
+            {
+                aSender.AllowThisOneRowDragDrop = false;
+            }
+
+            if (aColumnIndexFromMouseDown == aColumnIndexOfItemUnderMouseToDrop)
+            {
+                aSender.AllowThisOneColumnDragDrop = false;
+            }
+
+            if (ReOrdered != null)
+            {
+                TriggerReOrder(aRowIndexFromMouseDown, aRowIndexOfItemUnderMouseToDrop, aColumnIndexFromMouseDown, aColumnIndexOfItemUnderMouseToDrop, aSender);
+            }
+        }
+
+        private void TriggerReOrder(int theRowIndexFromMouseDown, int theRowIndexOfItemUnderMouseToDrop, int theColumnIndexFromMouseDown, int theColumnIndexOfItemUnderMouseToDrop, DragDropUserControl theSender)
+        {
+            if (theSender.AllowThisOneRowDragDrop && theRowIndexFromMouseDown <= parameters.RowLabels.Count &&
+                theRowIndexOfItemUnderMouseToDrop <= parameters.RowLabels.Count)
+            {
+                if (theRowIndexFromMouseDown > theRowIndexOfItemUnderMouseToDrop)
+                {
+                    var aSwapValue = rowLabels[theRowIndexFromMouseDown];
+                    int aI = theRowIndexFromMouseDown;
+                    for (; aI > theRowIndexOfItemUnderMouseToDrop; aI--)
+                    {
+                        rowLabels[aI] = rowLabels[aI - 1];
+                    }
+
+                    rowLabels[aI] = aSwapValue;
+                }
+                else
+                {
+                    var aSwapValue = rowLabels[theRowIndexFromMouseDown];
+                    int aI = theRowIndexFromMouseDown;
+                    for (; aI < theRowIndexOfItemUnderMouseToDrop; aI++)
+                    {
+                        rowLabels[aI] = rowLabels[aI + 1];
+                    }
+
+                    rowLabels[aI] = aSwapValue;
+                }
+
+                ReOrderEventArgs aE = new ReOrderEventArgs(rowLabels.Values.ToList(), columnLabels.Values.ToList());
+                ReOrdered(this, aE);
+            }
+            else if (theSender.AllowThisOneColumnDragDrop && theColumnIndexFromMouseDown <= parameters.ColumnLabels.Count &&
+                     theColumnIndexOfItemUnderMouseToDrop <= parameters.ColumnLabels.Count)
+            {
+                if (theColumnIndexFromMouseDown > theColumnIndexOfItemUnderMouseToDrop)
+                {
+                    var aSwapValue = rowLabels[theColumnIndexFromMouseDown];
+                    int aI = theColumnIndexFromMouseDown;
+                    for (; aI > theRowIndexOfItemUnderMouseToDrop; aI--)
+                    {
+                        rowLabels[aI] = rowLabels[aI - 1];
+                    }
+
+                    rowLabels[aI] = aSwapValue;
+                }
+                else
+                {
+                    var aSwapValue = rowLabels[theColumnIndexFromMouseDown];
+                    int aI = theColumnIndexFromMouseDown;
+                    for (; aI < theColumnIndexOfItemUnderMouseToDrop; aI++)
+                    {
+                        rowLabels[aI] = rowLabels[aI + 1];
+                    }
+
+                    rowLabels[aI] = aSwapValue;
+                }
+
+                ReOrderEventArgs aE = new ReOrderEventArgs(rowLabels.Values.ToList(), columnLabels.Values.ToList());
+                ReOrdered(this, aE);
             }
         }
 
