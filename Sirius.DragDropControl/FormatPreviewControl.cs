@@ -148,7 +148,7 @@ namespace Sirius.DragDropControl
                             return 1;
                         }
 
-                        if (aItem1.ToString() == aItem2.ToString())
+                        if (aItem1.Equals(aItem2))
                         {
                             return aHelper1.OriginalPosition - aHelper2.OriginalPosition;
                         }

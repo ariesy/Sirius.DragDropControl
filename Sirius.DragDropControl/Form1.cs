@@ -20,7 +20,7 @@ namespace Sirius.DragDropControl
             aParameter.RowLabels.Add("Date");
             aParameter.RowLabels.Add("Data");
             aParameter.Data["Entity"] = new List<object> { "Direct Group", "Fortor Motor", "Home Depot" };
-            aParameter.Data["Date"] = new List<object> { 2011, 2012 };
+            aParameter.Data["Date"] = new List<object> { "2011-01-01", "2012-02-01" };
             aParameter.Data["Data"] = new List<object> { "Deposit", "debt" };
             var aFormatPreviewControl = new FormatPreviewControl();
             panel1.Controls.Add(aFormatPreviewControl);
