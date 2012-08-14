@@ -492,13 +492,13 @@ namespace Sirius.DragDropControl
         public static List<int> ToNumber(this int theDecimal, int theScale)
         {
             var aResult = new Stack<int>();
-            while (theDecimal > theScale)
+            while (theDecimal >= theScale)
             {
                 aResult.Push(theDecimal % theScale);
                 theDecimal = theDecimal / theScale;
             }
 
-            aResult.Push(theDecimal);
+            aResult.Push(theDecimal - 1);
 
             return aResult.ToList();
         }
