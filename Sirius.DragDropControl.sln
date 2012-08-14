@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sirius.DragDropControl", "Sirius.DragDropControl\Sirius.DragDropControl.csproj", "{15245CA1-A60D-4319-84DC-DA63790A1385}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sirius.DragDropControl.Test", "Sirius.DragDropControl.Test\Sirius.DragDropControl.Test.csproj", "{F04971F8-2250-4B56-82F3-5B3FBD5F6E98}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -13,6 +15,10 @@ Global
 		{15245CA1-A60D-4319-84DC-DA63790A1385}.Debug|x86.Build.0 = Debug|x86
 		{15245CA1-A60D-4319-84DC-DA63790A1385}.Release|x86.ActiveCfg = Release|x86
 		{15245CA1-A60D-4319-84DC-DA63790A1385}.Release|x86.Build.0 = Release|x86
+		{F04971F8-2250-4B56-82F3-5B3FBD5F6E98}.Debug|x86.ActiveCfg = Debug|x86
+		{F04971F8-2250-4B56-82F3-5B3FBD5F6E98}.Debug|x86.Build.0 = Debug|x86
+		{F04971F8-2250-4B56-82F3-5B3FBD5F6E98}.Release|x86.ActiveCfg = Release|x86
+		{F04971F8-2250-4B56-82F3-5B3FBD5F6E98}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
