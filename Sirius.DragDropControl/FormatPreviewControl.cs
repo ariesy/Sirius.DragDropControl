@@ -222,7 +222,10 @@ namespace Sirius.DragDropControl
             var aColumnHeaders = CreateColumnHeaders(aColumnCount);
             foreach (var aHeader in aColumnHeaders)
             {
+                if (!aDataTable.Columns.Contains(aHeader))
+                {
                 aDataTable.Columns.Add(aHeader);
+            }
             }
 
             List<List<object>> aRowLabelsData = CreateHeadersData(parameters.RowLabels);
@@ -470,7 +473,8 @@ namespace Sirius.DragDropControl
         {
             List<string> aAlphabet = new List<string>();
             List<string> aResult = new List<string>();
-            aAlphabet.Add(string.Empty);
+
+            //aAlphabet.Add(string.Empty);
             for (int aI = 0; aI < 26; aI++)
             {
                 aAlphabet.Add(char.ConvertFromUtf32(65 + aI));
@@ -497,15 +501,10 @@ namespace Sirius.DragDropControl
                 throw new NotSupportedException();
             }
 
-            var aDecimal = theDecimal + 1;
+            var aDecimal = theDecimal;
             var aResult = new Stack<int>();
-            while (aDecimal > theScale)
+            while (aDecimal >= theScale)
             {
-                if (aDecimal % theScale == 0)
-                {
-                    aDecimal += 1;
-                }
-
                 aResult.Push(aDecimal % theScale);
                 aDecimal = aDecimal / theScale;
             }

@@ -42,6 +42,14 @@ namespace Sirius.DragDropControl.Test
             var aResult3 = aNumber3.ToNumber(26);
             Assert.AreEqual("A", string.Join(string.Empty, aResult3.Select(aBit => aAlphabet[aBit]).ToArray()));
 
+            int aNumber4 = 27;
+            var aResult4 = aNumber4.ToNumber(26);
+            Assert.AreEqual("AB", string.Join(string.Empty, aResult4.Select(aBit => aAlphabet[aBit]).ToArray()));
+
+            int aNumber5 = 52;
+            var aResult5 = aNumber5.ToNumber(26);
+            Assert.AreEqual("AZ", string.Join(string.Empty, aResult5.Select(aBit => aAlphabet[aBit]).ToArray()));
+
             //int aNumber2 = 26 * 26 - 1;
             //var aResult2 = aNumber2.ToNumber(26);
             //Assert.AreEqual(0, aResult[0]);
