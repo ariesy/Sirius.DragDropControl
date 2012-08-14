@@ -177,7 +177,6 @@ namespace Sirius.DragDropControl
                 {
                     //int aRowIdx = aI + parameters.RowLabels.Count + 1;
                     //int aColumnIdx = aJ + parameters.ColumnLabels.Count + 1;
-
                     int aRowIdx = aI + 1;
                     int aColumnIdx = aJ  + 1;
 
