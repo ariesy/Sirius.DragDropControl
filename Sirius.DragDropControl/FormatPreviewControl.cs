@@ -166,15 +166,21 @@ namespace Sirius.DragDropControl
 
         public string[,] GetOutPut()
         {
-            var aWedth = innerControl.InnerDataGridView.Columns.Count - parameters.ColumnLabels.Count - 1;
-            var aHeight = activeRowCount - 1 - parameters.RowLabels.Count;
+            //var aWedth = innerControl.InnerDataGridView.Columns.Count - parameters.ColumnLabels.Count - 1;
+            //var aHeight = activeRowCount - 1 - parameters.RowLabels.Count;
+            var aWedth = innerControl.InnerDataGridView.Columns.Count - 1;
+            var aHeight = activeRowCount - 1;
             var aResult = new string[aHeight, aWedth];
             for (int aI = 0; aI < aHeight; aI++)
             {
                 for (int aJ = 0; aJ < aWedth; aJ++)
                 {
-                    int aRowIdx = aI + parameters.RowLabels.Count + 1;
-                    int aColumnIdx = aJ + parameters.ColumnLabels.Count + 1;
+                    //int aRowIdx = aI + parameters.RowLabels.Count + 1;
+                    //int aColumnIdx = aJ + parameters.ColumnLabels.Count + 1;
+
+                    int aRowIdx = aI + 1;
+                    int aColumnIdx = aJ  + 1;
+
                     List<string> aValueContainer = new List<string>();
                     for (int aColumnLabelIdx = 1; aColumnLabelIdx < parameters.ColumnLabels.Count + 1; aColumnLabelIdx++)
                     {
