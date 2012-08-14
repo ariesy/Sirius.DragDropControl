@@ -496,15 +496,15 @@ namespace Sirius.DragDropControl
                 throw new NotSupportedException();
             }
 
-            theDecimal += 1;
+             var aDecimal = theDecimal + 1;
             var aResult = new Stack<int>();
-            while (theDecimal > theScale)
+            while (aDecimal > theScale)
             {
-                aResult.Push(theDecimal % theScale);
-                theDecimal = theDecimal / theScale;
+                aResult.Push(aDecimal % theScale);
+                aDecimal = aDecimal / theScale;
             }
 
-            aResult.Push(theDecimal);
+            aResult.Push(aDecimal);
 
             return aResult.ToList();
         }
