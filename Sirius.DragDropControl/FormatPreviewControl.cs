@@ -470,6 +470,7 @@ namespace Sirius.DragDropControl
         {
             List<string> aAlphabet = new List<string>();
             List<string> aResult = new List<string>();
+            aAlphabet.Add(string.Empty);
             for (int aI = 0; aI < 26; aI++)
             {
                 aAlphabet.Add(char.ConvertFromUtf32(65 + aI));
@@ -479,7 +480,7 @@ namespace Sirius.DragDropControl
             {
                 var a26ScaleNumber = aI.ToNumber(26);
                 List<string> aHeader = new List<string>();
-                aResult.Add(string.Join(string.Empty, a26ScaleNumber.Select(aBit => aAlphabet[aBit - 1]).ToArray()));
+                aResult.Add(string.Join(string.Empty, a26ScaleNumber.Select(aBit => aAlphabet[aBit]).ToArray()));
             }
 
             return aResult;
@@ -491,15 +492,20 @@ namespace Sirius.DragDropControl
     {
         public static List<int> ToNumber(this int theDecimal, int theScale)
         {
-            if (theDecimal <= 0)
+            if (theDecimal < 0)
             {
                 throw new NotSupportedException();
             }
 
-             var aDecimal = theDecimal + 1;
+            var aDecimal = theDecimal + 1;
             var aResult = new Stack<int>();
             while (aDecimal > theScale)
             {
+                if (aDecimal % theScale == 0)
+                {
+                    aDecimal += 1;
+                }
+
                 aResult.Push(aDecimal % theScale);
                 aDecimal = aDecimal / theScale;
             }
