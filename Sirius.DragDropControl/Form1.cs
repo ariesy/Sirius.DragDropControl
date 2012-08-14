@@ -36,6 +36,8 @@ namespace Sirius.DragDropControl
             aFormatPreviewControl.Sort(FormatPreviewControl.SortOn.ColumnLabels, "Entity", FormatPreviewControl.SortOrder.Asc);
 
             aFormatPreviewControl.ReOrdered += FormatPreviewControlReOrdered;
+
+            var aResult = aFormatPreviewControl.GetOutPut();
         }
 
         private void FormatPreviewControlReOrdered(object theSender, FormatPreviewControl.ReOrderEventArgs theE)

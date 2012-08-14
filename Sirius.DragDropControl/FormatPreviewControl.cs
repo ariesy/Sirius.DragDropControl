@@ -63,7 +63,7 @@ namespace Sirius.DragDropControl
 
         private const int TOTAL_ROW = 17;
 
-        private int dragableRowCount;
+        private int activeRowCount;
         
         private DragDropUserControl innerControl;
 
@@ -164,6 +164,35 @@ namespace Sirius.DragDropControl
                     });
         }
 
+        public string[,] GetOutPut()
+        {
+            var aWedth = innerControl.InnerDataGridView.Columns.Count - parameters.ColumnLabels.Count - 1;
+            var aHeight = activeRowCount - 1 - parameters.RowLabels.Count;
+            var aResult = new string[aHeight, aWedth];
+            for (int aI = 0; aI < aHeight; aI++)
+            {
+                for (int aJ = 0; aJ < aWedth; aJ++)
+                {
+                    int aRowIdx = aI + parameters.RowLabels.Count + 1;
+                    int aColumnIdx = aJ + parameters.ColumnLabels.Count + 1;
+                    List<string> aValueContainer = new List<string>();
+                    for (int aColumnLabelIdx = 1; aColumnLabelIdx < parameters.ColumnLabels.Count + 1; aColumnLabelIdx++)
+                    {
+                        aValueContainer.Add(innerControl.InnerDataGridView.Rows[aRowIdx].Cells[aColumnLabelIdx].Value.ToString());
+                    }
+
+                    for (int aRowLabelIdx = 1; aRowLabelIdx < parameters.RowLabels.Count + 1; aRowLabelIdx++)
+                    {
+                        aValueContainer.Add(innerControl.InnerDataGridView.Rows[aRowLabelIdx].Cells[aColumnIdx].Value.ToString());
+                    }
+
+                    aResult[aI, aJ] = string.Join(",", aValueContainer.ToArray());
+                }
+            }
+
+            return aResult;
+        }
+
         #region private methods
         private bool IsAllValueBlank(List<object> theList)
         {
@@ -215,8 +244,8 @@ namespace Sirius.DragDropControl
                 aDataTable.Rows.Add(aSubList.ToArray());
             }
 
-            dragableRowCount = aDataTable.Rows.Count;
-            for (int aI = dragableRowCount + 1; aI < TOTAL_ROW; aI++)
+            activeRowCount = aDataTable.Rows.Count;
+            for (int aI = activeRowCount + 1; aI < TOTAL_ROW; aI++)
             {
                 aDataTable.Rows.Add(new List<object>().ToArray());
             }
@@ -310,7 +339,7 @@ namespace Sirius.DragDropControl
                 aSender.AllowThisOneColumnDragDrop = false;
             }
 
-            if (aRowIndexFromMouseDown > dragableRowCount || aRowIndexOfItemUnderMouseToDrop > dragableRowCount)
+            if (aRowIndexFromMouseDown > activeRowCount || aRowIndexOfItemUnderMouseToDrop > activeRowCount)
             {
                 aSender.AllowThisOneRowDragDrop = false;
             }
@@ -452,8 +481,6 @@ namespace Sirius.DragDropControl
         } 
         #endregion
     }
-
-    
 
     public static class NumberScaleConvertor
     {
